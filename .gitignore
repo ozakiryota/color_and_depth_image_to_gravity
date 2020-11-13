@@ -1,0 +1,6 @@
+weights/*
+logs
+graph/*
+save/*
+
+!.gitkeep
