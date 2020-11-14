@@ -22,7 +22,7 @@ class FineTuner(trainer_mod.Trainer):
             method_name,
             train_dataset, val_dataset,
             net, weights_path, criterion,
-            optimizer_name, lr_cnn, lr_fc,
+            optimizer_name, lr_colorcnn, lr_depthcnn, lr_fc,
             batch_size, num_epochs):
         self.setRandomCondition()
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -30,9 +30,9 @@ class FineTuner(trainer_mod.Trainer):
         self.dataloaders_dict = self.getDataloader(train_dataset, val_dataset, batch_size)
         self.net = self.getSetNetwork(net, weights_path)
         self.criterion = criterion
-        self.optimizer = self.getOptimizer(optimizer_name, lr_cnn, lr_fc)
+        self.optimizer = self.getOptimizer(optimizer_name, lr_colorcnn, lr_depthcnn, lr_fc)
         self.num_epochs = num_epochs
-        self.str_hyperparameter  = self.getStrHyperparameter(method_name, train_dataset, optimizer_name, lr_cnn, lr_fc, batch_size)
+        self.str_hyperparameter  = self.getStrHyperparameter(method_name, train_dataset, optimizer_name, lr_colorcnn, lr_depthcnn, lr_fc, batch_size)
 
     def getSetNetwork(self, net, weights_path): #overwrite
         print(net)
@@ -47,7 +47,7 @@ class FineTuner(trainer_mod.Trainer):
         net.load_state_dict(loaded_weights)
         return net
 
-    def getStrHyperparameter(self, method_name, dataset, optimizer_name, lr_cnn, lr_fc, batch_size):    #overwrite
+    def getStrHyperparameter(self, method_name, dataset, optimizer_name, lr_colorcnn, lr_depthcnn, lr_fc, batch_size):    #overwrite
         str_hyperparameter = method_name \
             + str(len(self.dataloaders_dict["train"].dataset)) + "tune" \
             + str(len(self.dataloaders_dict["val"].dataset)) + "val" \
@@ -55,7 +55,8 @@ class FineTuner(trainer_mod.Trainer):
             + str(dataset.transform.mean[0]) + "mean" \
             + str(dataset.transform.std[0]) + "std" \
             + optimizer_name \
-            + str(lr_cnn) + "lrcnn" \
+            + str(lr_colorcnn) + "lrcolorcnn" \
+            + str(lr_depthcnn) + "lrdepthcnn" \
             + str(lr_fc) + "lrfc" \
             + str(batch_size) + "batch" \
             + str(self.num_epochs) + "epoch"
@@ -65,14 +66,15 @@ class FineTuner(trainer_mod.Trainer):
 def main():
     ## hyperparameters
     method_name = "regression"
-    train_rootpath = "../../../dataset_image_to_gravity/AirSim/1cam/train"
-    val_rootpath = "../../../dataset_image_to_gravity/AirSim/1cam/val"
-    csv_name = "imu_camera.csv"
+    train_rootpath = "../../../dataset_image_to_gravity/AirSim/lidar1cam/train"
+    val_rootpath = "../../../dataset_image_to_gravity/AirSim/lidar1cam/val"
+    csv_name = "imu_lidar_camera.csv"
     resize = 112
     mean_element = 0.5
     std_element = 0.5
     optimizer_name = "Adam"  #"SGD" or "Adam"
-    lr_cnn = 1e-6
+    lr_colorcnn = 1e-6
+    lr_depthcnn = 1e-6
     lr_fc = 1e-5
     batch_size = 100
     num_epochs = 50
@@ -105,7 +107,7 @@ def main():
         method_name,
         train_dataset, val_dataset,
         net, weights_path, criterion,
-        optimizer_name, lr_cnn, lr_fc,
+        optimizer_name, lr_colorcnn, lr_depthcnn, lr_fc,
         batch_size, num_epochs
     )
     fine_tuner.train()

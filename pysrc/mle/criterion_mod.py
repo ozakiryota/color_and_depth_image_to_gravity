@@ -13,9 +13,6 @@ class Criterion:
         L = L.to(self.device)
         dist = torch.distributions.MultivariateNormal(mu, scale_tril=L)
         loss = -dist.log_prob(labels)
-        # print("mu = ", mu)
-        # print("labels = ", labels)
-        # print("loss = ", loss)
         loss = loss.mean()
         return loss
 

@@ -28,7 +28,7 @@ def main():
     std_element = 0.5
     optimizer_name = "Adam"  #"SGD" or "Adam"
     lr_colorcnn = 1e-5
-    lr_depthcnn = 1e-4
+    lr_depthcnn = 1e-5
     lr_fc = 1e-4
     batch_size = 100
     num_epochs = 50
