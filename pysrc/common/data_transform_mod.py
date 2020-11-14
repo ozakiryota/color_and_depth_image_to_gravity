@@ -9,6 +9,9 @@ from torchvision import transforms
 
 class DataTransform():
     def __init__(self, resize, mean, std):
+        self.resize = resize
+        self.mean = mean
+        self.std = std
         self.img_transform = transforms.Compose([
             transforms.Resize(resize),
             transforms.CenterCrop(resize),
@@ -55,6 +58,7 @@ class DataTransform():
 # depth_img_trans_numpy = depth_img_trans.numpy().transpose((1, 2, 0))  #(ch, h, w) -> (h, w, ch)
 # print("depth_img_trans_numpy.shape = ", depth_img_trans_numpy.shape)
 # color_img_trans_numpy = color_img_trans.numpy().transpose((1, 2, 0))  #(ch, h, w) -> (h, w, ch)
+# color_img_trans_numpy = np.clip(color_img_trans_numpy, 0, 1)
 # print("color_img_trans_numpy.shape = ", color_img_trans_numpy.shape)
 # ## save
 # depth_img_trans_numpy = depth_img_trans_numpy.squeeze(2)

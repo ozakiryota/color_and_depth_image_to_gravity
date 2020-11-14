@@ -6,42 +6,43 @@ from torchvision import models
 import torch.nn as nn
 
 class Network(nn.Module):
-    def __init__(self, resize, use_pretrained=True):
+    def __init__(self, resize, dim_fc_out=3, use_pretrained_vgg=True):
         super(Network, self).__init__()
 
-        vgg = models.vgg16(pretrained=use_pretrained)
+        vgg = models.vgg16(pretrained=use_pretrained_vgg)
         self.color_cnn = vgg.features
 
-        self.depth_cnn = nn.Sequential(
-            nn.Conv2d(1, 64, kernel_size=3, stride=1, padding=1),
-            # nn.BatchNorm2d(64),
-            nn.ReLU(inplace=True),
-            nn.MaxPool2d(kernel_size=2, stride=2),
-            nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=1),
-            # nn.BatchNorm2d(128),
-            nn.ReLU(inplace=True),
-            nn.MaxPool2d(kernel_size=2, stride=2),
-            nn.Conv2d(128, 256, kernel_size=3, stride=1, padding=1),
-            # nn.BatchNorm2d(256),
-            nn.ReLU(inplace=True),
-            nn.MaxPool2d(kernel_size=2, stride=2)
-        )
         # self.depth_cnn = nn.Sequential(
-        #     nn.Conv2d(1, 64, kernel_size=(3, 5), stride=1, padding=(1, 2)),
+        #     nn.Conv2d(1, 64, kernel_size=3, stride=1, padding=1),
         #     # nn.BatchNorm2d(64),
         #     nn.ReLU(inplace=True),
-        #     nn.MaxPool2d(kernel_size=(2, 4), stride=(2, 4)),
-        #     nn.Conv2d(64, 128, kernel_size=(3, 5), stride=1, padding=(1, 2)),
+        #     nn.MaxPool2d(kernel_size=2, stride=2),
+        #     nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=1),
         #     # nn.BatchNorm2d(128),
         #     nn.ReLU(inplace=True),
-        #     nn.MaxPool2d(kernel_size=(2, 4), stride=(2, 4)),
-        #     nn.Conv2d(128, 256, kernel_size=(3, 5), stride=1, padding=(1, 2)),
+        #     nn.MaxPool2d(kernel_size=2, stride=2),
+        #     nn.Conv2d(128, 256, kernel_size=3, stride=1, padding=1),
         #     # nn.BatchNorm2d(256),
         #     nn.ReLU(inplace=True),
-        #     nn.MaxPool2d(kernel_size=(2, 4), stride=(2, 4))
+        #     nn.MaxPool2d(kernel_size=2, stride=2)
         # )
+        self.depth_cnn = nn.Sequential(
+            nn.Conv2d(1, 64, kernel_size=(3, 5), stride=1, padding=(1, 2)),
+            # nn.BatchNorm2d(64),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(kernel_size=(2, 4), stride=(2, 4)),
+            nn.Conv2d(64, 128, kernel_size=(3, 5), stride=1, padding=(1, 2)),
+            # nn.BatchNorm2d(128),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(kernel_size=(2, 4), stride=(2, 4)),
+            nn.Conv2d(128, 256, kernel_size=(3, 5), stride=1, padding=(1, 2)),
+            # nn.BatchNorm2d(256),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(kernel_size=(2, 4), stride=(2, 4))
+        )
 
-        num_fc_in_features = 512*(resize//32)*(resize//32) + 256*(32//8)*(1812//8)
+        # num_fc_in_features = 512*(resize//32)*(resize//32) + 256*(32//8)*(1812//8)
+        num_fc_in_features = 512*(resize//32)*(resize//32) + 256*(32//8)*(1812//64)
         self.fc = nn.Sequential(
             nn.Linear(num_fc_in_features, 100),
             nn.ReLU(inplace=True),
@@ -49,7 +50,7 @@ class Network(nn.Module):
             nn.Linear(100, 18),
             nn.ReLU(inplace=True),
             nn.Dropout(p=0.1),
-            nn.Linear(18, 3)
+            nn.Linear(18, dim_fc_out)
         )
         self.initializeWeights()
 
@@ -85,6 +86,8 @@ class Network(nn.Module):
         ## cnn
         features_color = self.color_cnn(inputs_color)
         features_depth = self.depth_cnn(inputs_depth)
+        # print("out_color_cnn: ", features_color.size())
+        # print("out_depth_cnn: ", features_depth.size())
         ## concat
         features_color = torch.flatten(features_color, 1)
         features_depth = torch.flatten(features_depth, 1)
@@ -114,7 +117,7 @@ class Network(nn.Module):
 # transform = data_transform_mod.DataTransform(resize, mean, std)
 # color_img_trans, depth_img_trans, _ = transform(color_img_pil, depth_img_numpy, acc_numpy, phase="train")
 # ## network
-# net = Network(resize, use_pretrained=True)
+# net = Network(resize, dim_fc_out=3, use_pretrained_vgg=True)
 # print(net)
 # list_colorcnn_param_value, list_depthcnn_param_value, list_fc_param_value = net.getParamValueList()
 # print("len(list_colorcnn_param_value) = ", len(list_colorcnn_param_value))
