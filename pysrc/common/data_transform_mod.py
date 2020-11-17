@@ -24,7 +24,7 @@ class DataTransform():
         color_img_tensor = self.img_transform(color_img_pil)
         ## depth: numpy -> tensor
         depth_img_numpy = depth_img_numpy.astype(np.float32)
-        depth_img_numpy = np.where(depth_img_numpy > 0.0, 1.0/depth_img_numpy, depth_img_numpy)
+        # depth_img_numpy = np.where(depth_img_numpy > 0.0, 1.0/depth_img_numpy, depth_img_numpy)
         # depth_img_numpy = np.clip(depth_img_numpy, 0, 1)
         depth_img_tensor = torch.from_numpy(depth_img_numpy)
         depth_img_tensor = depth_img_tensor.unsqueeze_(0)
