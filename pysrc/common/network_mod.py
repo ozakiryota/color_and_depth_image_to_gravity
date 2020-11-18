@@ -88,35 +88,35 @@ class Network(nn.Module):
         return outputs
 
 ##### test #####
-import data_transform_mod
-## color image
-color_img_path = "../../../dataset_image_to_gravity/AirSim/example/camera_0.jpg"
-color_img_pil = Image.open(color_img_path)
-## depth image
-depth_img_path = "../../../dataset_image_to_gravity/AirSim/example/lidar.npy"
-depth_img_numpy = np.load(depth_img_path)
-## label
-acc_list = [0, 0, 1]
-acc_numpy = np.array(acc_list)
-## trans param
-resize = 224
-mean = ([0.5, 0.5, 0.5])
-std = ([0.5, 0.5, 0.5])
-## transform
-transform = data_transform_mod.DataTransform(resize, mean, std)
-color_img_trans, depth_img_trans, _ = transform(color_img_pil, depth_img_numpy, acc_numpy, phase="train")
-## network
-net = Network(resize, dim_fc_out=3, use_pretrained_vgg=True)
-print(net)
-list_colorcnn_param_value, list_depthcnn_param_value, list_fc_param_value = net.getParamValueList()
-print("len(list_colorcnn_param_value) = ", len(list_colorcnn_param_value))
-print("len(list_depthcnn_param_value) = ", len(list_depthcnn_param_value))
-print("len(list_fc_param_value) = ", len(list_fc_param_value))
-## prediction
-inputs_color = color_img_trans.unsqueeze_(0)
-inputs_depth = depth_img_trans.unsqueeze_(0)
-print("inputs_color.size() = ", inputs_color.size())
-print("inputs_depth.size() = ", inputs_depth.size())
-outputs = net(inputs_color, inputs_depth)
-print("outputs.size() = ", outputs.size())
-print("outputs = ", outputs)
+# import data_transform_mod
+# ## color image
+# color_img_path = "../../../dataset_image_to_gravity/AirSim/example/camera_0.jpg"
+# color_img_pil = Image.open(color_img_path)
+# ## depth image
+# depth_img_path = "../../../dataset_image_to_gravity/AirSim/example/lidar.npy"
+# depth_img_numpy = np.load(depth_img_path)
+# ## label
+# acc_list = [0, 0, 1]
+# acc_numpy = np.array(acc_list)
+# ## trans param
+# resize = 224
+# mean = ([0.5, 0.5, 0.5])
+# std = ([0.5, 0.5, 0.5])
+# ## transform
+# transform = data_transform_mod.DataTransform(resize, mean, std)
+# color_img_trans, depth_img_trans, _ = transform(color_img_pil, depth_img_numpy, acc_numpy, phase="train")
+# ## network
+# net = Network(resize, dim_fc_out=3, use_pretrained_vgg=True)
+# print(net)
+# list_colorcnn_param_value, list_depthcnn_param_value, list_fc_param_value = net.getParamValueList()
+# print("len(list_colorcnn_param_value) = ", len(list_colorcnn_param_value))
+# print("len(list_depthcnn_param_value) = ", len(list_depthcnn_param_value))
+# print("len(list_fc_param_value) = ", len(list_fc_param_value))
+# ## prediction
+# inputs_color = color_img_trans.unsqueeze_(0)
+# inputs_depth = depth_img_trans.unsqueeze_(0)
+# print("inputs_color.size() = ", inputs_color.size())
+# print("inputs_depth.size() = ", inputs_depth.size())
+# outputs = net(inputs_color, inputs_depth)
+# print("outputs.size() = ", outputs.size())
+# print("outputs = ", outputs)

@@ -20,6 +20,17 @@ class DataTransform():
         ])
 
     def __call__(self, color_img_pil, depth_img_numpy, acc_numpy, phase="train"):
+        ## augemntation
+        if phase == "train":
+            ## mirror
+            is_mirror = bool(random.getrandbits(1))
+            if is_mirror:
+                ## color
+                color_img_pil = ImageOps.mirror(color_img_pil)
+                ## depth
+                depth_img_numpy = np.fliplr(depth_img_numpy)
+                ## acc
+                acc_numpy[1] = -acc_numpy[1]
         ## color: pil -> tensor
         color_img_tensor = self.img_transform(color_img_pil)
         ## depth: numpy -> tensor
@@ -28,6 +39,7 @@ class DataTransform():
         # depth_img_numpy = np.clip(depth_img_numpy, 0, 1)
         depth_img_tensor = torch.from_numpy(depth_img_numpy)
         depth_img_tensor = depth_img_tensor.unsqueeze_(0)
+        # depth_img_tensor = transforms.functional.normalize(depth_img_tensor, ([0.5]), ([0.5]))
         ## acc: numpy -> tensor
         acc_numpy = acc_numpy.astype(np.float32)
         acc_numpy = acc_numpy / np.linalg.norm(acc_numpy)
@@ -44,11 +56,11 @@ class DataTransform():
 # print("depth_img_numpy = ", depth_img_numpy)
 # print("depth_img_numpy.shape = ", depth_img_numpy.shape)
 # ## label
-# acc_list = [1, 0, 0]
+# acc_list = [0, 1, 0]
 # acc_numpy = np.array(acc_list)
 # print("acc_numpy = ", acc_numpy)
 # ## trans param
-# resize = 224
+# resize = 112
 # mean = ([0.5, 0.5, 0.5])
 # std = ([0.5, 0.5, 0.5])
 # ## transform
