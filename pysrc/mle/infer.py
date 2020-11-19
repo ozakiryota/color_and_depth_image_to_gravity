@@ -57,19 +57,20 @@ class Inference(inference_mod.Inference):
         start_clock = time.time()
         ## data load
         loss_all = 0.0
-        for inputs, labels in tqdm(self.dataloader):
-            inputs = inputs.to(self.device)
+        for inputs_color, inputs_depth, labels in tqdm(self.dataloader):
+            inputs_color = inputs_color.to(self.device)
+            inputs_depth = inputs_depth.to(self.device)
             labels = labels.to(self.device)
             ## compute gradient
             with torch.set_grad_enabled(False):
                 ## forward
-                outputs = self.net(inputs)
+                outputs = self.net(inputs_color, inputs_depth)
                 loss_batch = self.computeLoss(outputs, labels)
                 ## add loss
-                loss_all += loss_batch.item() * inputs.size(0)
+                loss_all += loss_batch.item() * inputs_color.size(0)
                 # print("loss_batch.item() = ", loss_batch.item())
             ## append
-            self.list_inputs += list(inputs.cpu().detach().numpy())
+            self.list_inputs_color += list(inputs_color.cpu().detach().numpy())
             self.list_labels += labels.cpu().detach().numpy().tolist()
             self.list_outputs += outputs.cpu().detach().numpy().tolist()
             cov = self.criterion.getCovMatrix(outputs)
@@ -119,7 +120,7 @@ class Inference(inference_mod.Inference):
             ## register
             sample = Sample(
                 i,
-                self.dataloader.dataset.data_list[i][3:], self.list_inputs[i], self.list_labels[i], self.list_outputs[i], self.list_cov[i], mul_sigma,
+                self.dataloader.dataset.data_list[i][3:], self.list_inputs_color[i], self.list_labels[i], self.list_outputs[i], self.list_cov[i], mul_sigma,
                 label_r, label_p, output_r, output_p, error_r, error_p
             )
             self.list_samples.append(sample)
