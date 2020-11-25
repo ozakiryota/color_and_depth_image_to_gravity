@@ -12,9 +12,9 @@ from tensorboardX import SummaryWriter
 import sys
 sys.path.append('../')
 from common import trainer_mod
-from common import make_datalist_mod
-from common import data_transform_mod
-from common import dataset_mod
+import make_datalist_mod
+import data_transform_mod
+import dataset_mod
 from common import network_mod
 
 class FineTuner(trainer_mod.Trainer):
@@ -66,8 +66,8 @@ class FineTuner(trainer_mod.Trainer):
 def main():
     ## hyperparameters
     method_name = "regression"
-    train_rootpath = "../../../dataset_image_to_gravity/AirSim/lidar1cam/train"
-    val_rootpath = "../../../dataset_image_to_gravity/AirSim/lidar1cam/val"
+    train_rootpath = "../../../dataset_image_to_gravity/AirSim/lidar4cam/train"
+    val_rootpath = "../../../dataset_image_to_gravity/AirSim/lidar4cam/val"
     csv_name = "imu_lidar_camera.csv"
     resize = 112
     mean_element = 0.5
